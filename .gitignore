@@ -1,0 +1,5 @@
+/.ipnyb_checkpoints/
+/.vscode/
+/env/
+/video*
+/inference/
