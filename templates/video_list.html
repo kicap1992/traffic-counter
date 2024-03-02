@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Traffic Counter | Video Data</title>
+
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="assets/styles/style.min.css">
+
+    <!-- mCustomScrollbar -->
+    <link rel="stylesheet" href="assets/plugin/mCustomScrollbar/jquery.mCustomScrollbar.min.css">
+
+    <!-- Waves Effect -->
+    <link rel="stylesheet" href="assets/plugin/waves/waves.min.css">
+
+    <!-- Sweet Alert -->
+    <link rel="stylesheet" href="assets/plugin/sweet-alert/sweetalert.css">
+
+    <!-- Color Picker -->
+    <link rel="stylesheet" href="assets/color-switcher/color-switcher.min.css">
+    <style>
+        /* Make the video responsive */
+        #myVideo {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-menu">
+        <header class="header">
+            <a href="index.html" class="logo">Traffic Counter</a>
+            <button type="button" class="button-close fa fa-times js__menu_close"></button>
+            <div class="user">
+                <a href="#" class="avatar"><img src="http://placehold.it/80x80" alt=""><span
+                        class="status online"></span></a>
+                <h5 class="name"><a href="profile.html">Admin</a></h5>
+                <h5 class="position">Administrator</h5>
+                <!-- /.name -->
+                <!-- <div class="control-wrap js__drop_down">
+				<i class="fa fa-caret-down js__drop_down_button"></i>
+				<div class="control-list">
+					<div class="control-item"><a href="profile.html"><i class="fa fa-user"></i> Profile</a></div>
+					<div class="control-item"><a href="#"><i class="fa fa-gear"></i> Settings</a></div>
+					<div class="control-item"><a href="#"><i class="fa fa-sign-out"></i> Log out</a></div>
+				</div>
+				
+			</div> -->
+                <!-- /.control-wrap -->
+            </div>
+            <!-- /.user -->
+        </header>
+        <!-- /.header -->
+        <div class="content">
+
+            <div class="navigation">
+                <h5 class="title">Navigasi</h5>
+                <!-- /.title -->
+                <ul class="menu js__accordion">
+                    <li>
+                        <a class="waves-effect" href="{{ url_for('index') }}"><i
+                                class="menu-icon fa fa-home"></i><span>Halaman
+                                Utama</span></a>
+                    </li>
+                    <li class="current">
+                        <a class="waves-effect" href="{{ url_for('video_list') }}"><i
+                                class="menu-icon fa fa-home"></i><span>Video
+                                Data</span></a>
+                    </li>
+
+                </ul>
+
+            </div>
+            <!-- /.navigation -->
+        </div>
+        <!-- /.content -->
+    </div>
+    <!-- /.main-menu -->
+
+    <div class="fixed-navbar">
+        <div class="pull-left">
+            <button type="button"
+                class="menu-mobile-button glyphicon glyphicon-menu-hamburger js__menu_mobile"></button>
+            <h1 class="page-title">Video Data</h1>
+            <!-- /.page-title -->
+        </div>
+        <!-- /.pull-left -->
+
+    </div>
+    <!-- /.fixed-navbar -->
+
+
+    <div id="wrapper">
+        <div class="main-content">
+
+            <div class="row small-spacing">
+                <div class="col-lg-2 col-md-1 col-xs-12"></div>
+
+                <div class="col-lg-8 col-md-10 col-xs-12">
+                    <div class="box-content">
+                        <h4 class="box-title">Video Data</h4>
+                        <div class="card-content">
+                            <div class="form-group">
+                                <label for="video">Pilih Video:</label>
+                                <select class="form-control" id="select_video" name="select_video">
+                                    <option value="-Pilih Video-" disabled selected>-Pilih Video-</option>
+                                    {% for video_var in video_list %}
+                                    <option value="{{ video_var }}">{{
+                                        video_var }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group text-center">
+                                <button type="button" class="btn btn-primary" onclick="play_video()">Play Video</button>
+                            </div>
+                            <hr>
+                            <div class="form-group text-center" style="display:none" id="video_container">
+                                <video id="myVideo" controls>
+                                    <source src="" type="video/mp4" id="myVideo_src">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-lg-2 col-md-1 col-xs-12"></div>
+            </div>
+
+            <div class="row small-spacing">
+                <div class="col-lg-2 col-md-1 col-xs-12"></div>
+                <div class="col-lg-8 col-md-10 col-xs-12">
+                    <div class="box-content">
+                        <h4 class="box-title">Upload Video Data</h4>
+                        <form class="card-content" id="uploadForm" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="">Video</label>
+                                <input type="file" id="videoFile" name="videoFile" class="form-control"
+                                    onchange="check_video()">
+                            </div>
+
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-primary">Upload
+                                    Video</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-1 col-xs-12"></div>
+            </div>
+
+
+            <footer class="footer">
+                <ul class="list-inline">
+                    <li>2024 © Traffic Counter.</li>
+                    <!-- <li><a href="#">Privacy</a></li>
+				<li><a href="#">Terms</a></li>
+				<li><a href="#">Help</a></li> -->
+                </ul>
+            </footer>
+        </div>
+        <!-- /.main-content -->
+    </div><!--/#wrapper -->
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+		<script src="assets/script/html5shiv.min.js"></script>
+		<script src="assets/script/respond.min.js"></script>
+	<![endif]-->
+    <!-- 
+	================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/scripts/jquery.min.js"></script>
+    <script src="assets/scripts/modernizr.min.js"></script>
+    <script src="assets/plugin/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/plugin/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="assets/plugin/nprogress/nprogress.js"></script>
+    <script src="assets/plugin/sweet-alert/sweetalert.min.js"></script>
+    <script src="assets/plugin/waves/waves.min.js"></script>
+    <!-- Full Screen Plugin -->
+    <script src="assets/plugin/fullscreen/jquery.fullscreen-min.js"></script>
+
+    <script src="assets/scripts/main.min.js"></script>
+    <script src="assets/color-switcher/color-switcher.min.js"></script>
+    <script src="assets/block/jquery.blockUI.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#uploadForm').submit(function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                if ($('#videoFile').val() == '') {
+                    alert('Please select a video file');
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append('file', $('#videoFile')[0].files[0]);
+
+                $.ajax({
+                    url: '/upload',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function (res) {
+
+                        $.blockUI({
+                            message: "Sedang Mengupload",
+                            css: {
+                                border: 'none',
+                                padding: '15px',
+                                backgroundColor: '#000',
+                                '-webkit-border-radius': '10px',
+                                '-moz-border-radius': '10px',
+                                opacity: .5,
+                                color: '#fff'
+                            }
+                        });
+                    },
+                    success: function (response) {
+                        $.unblockUI();
+                        alert("Upload Video Berhasil")
+                        // wait 2 seconds before refreshing the page
+                        setTimeout(function () {
+                            window.location.reload();
+                        } , 2000)
+                        // $('#uploadStatus').html('Upload successful. Filename: ' + response.filename);
+                    },
+                    error: function (xhr, status, error) {
+                        $.unblockUI();
+                        alert(error)
+                        // $('#uploadStatus').html('Upload failed: ' + error);
+                    }
+                });
+            });
+        });
+
+        function check_video() {
+            if (document.getElementById("videoFile").value == "") {
+                alert("Pilih Video Terlebih Dahulu")
+                return
+            }
+
+            if (document.getElementById("videoFile").value.split('.').pop() != "mp4") {
+                alert("File harus berakhiran dengan .mp4")
+                document.getElementById("videoFile").value = ""
+                return
+            }
+        }
+
+
+        function play_video() {
+            if (document.getElementById("select_video").value == "-Pilih Video-") {
+                alert("Pilih Video Terlebih Dahulu")
+                return
+            }
+
+            var video = document.getElementById("myVideo");
+            video.src = "videos/" + document.getElementById("select_video").value;
+            // console.log(video.src)
+            // play the video without sound
+            video.load();
+            video.muted = true;
+            video.play();
+
+            document.getElementById("video_container").style.display = "block";
+            // make the div responsive
+
+        }
+    </script>
+</body>
+
+</html>

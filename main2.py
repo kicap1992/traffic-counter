@@ -12,7 +12,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX  # Jenis font untuk teks
 font_scale = 0.5  # Skala font untuk teks
 
 # Path video yang akan diproses
-video_path = "video.mp4"
+video_path = "video3.mp4"
 model_path = "models/yolov8n.pt"
 
 # Buka video
@@ -55,6 +55,7 @@ while True:
         break
 
     try:
+        frame = imutils.resize(frame, width = 1280, height = 720)  # Mengubah ukuran frame ke 1280x720
         frame_color = frame.copy()  # Salin frame ke mode warna untuk pengolahan dan penggambaran
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Konversi frame ke citra grayscale
         frame_gray = cv2.cvtColor(frame_gray, cv2.COLOR_GRAY2BGR)  # Konversi kembali ke citra BGR untuk tampilan grayscale
