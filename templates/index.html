@@ -108,11 +108,11 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label for="video">Threshold</label>
                                 <input type="text" class="form-control" id="threshold" name="threshold"
                                     value="{{ threshold }}">
-                            </div>
+                            </div> -->
                             <div class="form-group text-center">
                                 <button type="button" class="btn btn-primary" onclick="olah_video()">Proses
                                     Video</button>
@@ -224,7 +224,8 @@
     <script>
         function olah_video() {
             var video = document.getElementById('video').value;
-            var threshold = document.getElementById('threshold').value;
+            // var threshold = document.getElementById('threshold').value;
+            var threshold = 450;
             window.location.href = '/?video=' + video + '&threshold=' + threshold;
         }
 

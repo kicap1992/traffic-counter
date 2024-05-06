@@ -14,7 +14,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 font_scale = 0.5
 
 # video_path = "inference/test.mp4"
-video_path = "video3.mp4"
+video_path = "video/videonya.mp4"
 model_path = "models/yolov8n.pt"
 
 cap = cv2.VideoCapture(video_path) #videoyu okumak için
