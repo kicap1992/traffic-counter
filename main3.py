@@ -304,14 +304,14 @@ while True:
         cv2.imshow("closing", closing)
         cv2.moveWindow("closing", width, 0)
 
-        # cv2.imshow("opening", opening)
-        # cv2.moveWindow("opening", 0, int(height * ratio))
+        cv2.imshow("opening", opening)
+        cv2.moveWindow("opening", 0, int(height * ratio))
 
-        # cv2.imshow("dilation", dilation)
-        # cv2.moveWindow("dilation", int(width * ratio), int(height * ratio))
+        cv2.imshow("dilation", dilation)
+        cv2.moveWindow("dilation", int(width * ratio), int(height * ratio))
 
-        # cv2.imshow("binary", bins)
-        # cv2.moveWindow("binary", width, int(height * ratio))
+        cv2.imshow("binary", bins)
+        cv2.moveWindow("binary", width, int(height * ratio))
 
 
         # adds to framecount
@@ -327,6 +327,7 @@ while True:
 
 
         break
+
 
 cap.release()
 cv2.destroyAllWindows()

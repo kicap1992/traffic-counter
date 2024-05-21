@@ -170,7 +170,7 @@ def generate_frames2(video, threshold,stat):
     ratio = .5  # resize ratio
     image = cv2.resize(frame, (0, 0), None, ratio, ratio)  # resize image
     width2, height2, channels = image.shape
-    video = cv2.VideoWriter('traffic_counter.avi', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), fps, (height2, width2), 1)
+    # video = cv2.VideoWriter('traffic_counter.avi', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), fps, (height2, width2), 1)
 
     while True:
 
@@ -199,18 +199,18 @@ def generate_frames2(video, threshold,stat):
             hull = [cv2.convexHull(c) for c in contours]
 
             # draw contours
-            cv2.drawContours(image, hull, -1, (0, 255, 0), 3)
+            # cv2.drawContours(image, hull, -1, (0, 255, 0), 3)
 
             # line created to stop counting contours, needed as cars in distance become one big contour
-            lineypos = 100
-            cv2.line(image, (0, lineypos), (width, lineypos), (255, 0, 0), 5)
+            lineypos = 125
+            # cv2.line(image, (0, lineypos), (width, lineypos), (255, 0, 0), 5)
 
             # line y position created to count contours
-            lineypos2 = 125
+            lineypos2 = 150
             cv2.line(image, (0, lineypos2), (width, lineypos2), (0, 255, 0), 5)
 
             # min area for contours in case a bunch of small noise contours are created
-            minarea = 400
+            minarea = 175
 
             # max area for contours, can be quite large for buses
             maxarea = 50000
@@ -382,8 +382,8 @@ def generate_frames2(video, threshold,stat):
                     cv2.putText(image, "Centroid" + str(curcent[0]) + "," + str(curcent[1]),
                                 (int(curcent[0]), int(curcent[1])), cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 255, 255), 2)
 
-                    cv2.putText(image, "ID:" + str(carids[currentcarsindex[i]]), (int(curcent[0]), int(curcent[1] - 15)),
-                                cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 255, 255), 2)
+                    # cv2.putText(image, "ID:" + str(carids[currentcarsindex[i]]), (int(curcent[0]), int(curcent[1] - 15)),
+                                # cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 255, 255), 2)
 
                     cv2.drawMarker(image, (int(curcent[0]), int(curcent[1])), (0, 0, 255), cv2.MARKER_STAR, markerSize=5,
                                 thickness=1, line_type=cv2.LINE_AA)
@@ -402,6 +402,7 @@ def generate_frames2(video, threshold,stat):
                             currentcarsindex[i]] not in caridscrossed:
 
                             carscrossedup = carscrossedup + 1
+                            kenderaan_kiri = carscrossedup
                             cv2.line(image, (0, lineypos2), (width, lineypos2), (0, 0, 255), 5)
                             caridscrossed.append(
                                 currentcarsindex[i])  # adds car id to list of count cars to prevent double counting
@@ -412,30 +413,32 @@ def generate_frames2(video, threshold,stat):
                             currentcarsindex[i]] not in caridscrossed:
 
                             carscrosseddown = carscrosseddown + 1
+                            kenderaan_kanan = carscrosseddown
                             cv2.line(image, (0, lineypos2), (width, lineypos2), (0, 0, 125), 5)
                             caridscrossed.append(currentcarsindex[i])
+                    jumlah_kenderaan = carscrossedup + carscrosseddown
 
             # Top left hand corner on-screen text
             #cv2.rectangle(image, (0, 0), (250, 100), (255, 0, 0), -1)  # background rectangle for on-screen text
 
-            cv2.putText(image, "Kenderaan Sebelah Kiri: " + str(carscrossedup), (0, 15), cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 170, 0),
-                    1)
+            cv2.putText(image, "Kenderaan Sebelah Kiri: " + str(carscrossedup), (0, 20), cv2.FONT_HERSHEY_SIMPLEX, .7, (255,255,255),
+                    4)
 
-            cv2.putText(image, "Kenderaan Sebelah Kanan: " + str(carscrosseddown), (0, 30), cv2.FONT_HERSHEY_SIMPLEX, .5,
-                        (0, 170, 0), 1)
+            cv2.putText(image, "Kenderaan Sebelah Kanan: " + str(carscrosseddown), (0, 45), cv2.FONT_HERSHEY_SIMPLEX, .7,
+                        (255,255,255), 4)
 
             # cv2.putText(image, "Total Cars Detected: " + str(len(carids)), (0, 60), cv2.FONT_HERSHEY_SIMPLEX, .5,
-            #             (0, 170, 0), 1)
+            #             (255,255,255), 1)
 
-            cv2.putText(image, "Frame: " + str(framenumber) + ' dari ' + str(frames_count), (0, 45), cv2.FONT_HERSHEY_SIMPLEX,
-                        .5, (0, 170, 0), 1)
+            cv2.putText(image, "Frame: " + str(framenumber) + ' dari ' + str(frames_count), (0, 60), cv2.FONT_HERSHEY_SIMPLEX,
+                        .5, (255,255,255), 1)
 
             cv2.putText(image, 'Waktu: ' + str(round(framenumber / fps, 2)) + ' detik dari ' + str(round(frames_count / fps, 2))
-                    + ' detik', (0, 60), cv2.FONT_HERSHEY_SIMPLEX, .5, (0, 170, 0), 1)
+                    + ' detik', (0, 75), cv2.FONT_HERSHEY_SIMPLEX, .5, (255,255,255), 1)
             
-            kenderaan_kanan = carscrosseddown
-            kenderaan_kiri = carscrossedup
-            jumlah_kenderaan = carscrossedup + carscrosseddown
+            
+            
+            
 
             # displays images and transformations and resize to 1280x720
             # cv2.imshow("countours", image)
@@ -456,7 +459,7 @@ def generate_frames2(video, threshold,stat):
             # cv2.moveWindow("closing", width, 0)
             elif stat == 'detectar':
                 # frame_to_encode = closing
-                frame_to_encode = cv2.resize(closing, (1280, 720))
+                frame_to_encode = cv2.resize(bins, (1280, 720))
             else :
                 # frame_to_encode = opening
                 frame_to_encode = cv2.resize(frame, (1280, 720))
@@ -490,7 +493,7 @@ def generate_frames2(video, threshold,stat):
             break
 
     cap.release()
-
+    cv2.destroyAllWindows()
 
 
 
