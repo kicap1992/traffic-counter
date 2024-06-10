@@ -58,11 +58,13 @@
                 <!-- /.title -->
                 <ul class="menu js__accordion">
                     <li class="current">
-                        <a class="waves-effect" href="{{ url_for('index') }}"><i class="menu-icon fa fa-home"></i><span>Halaman
+                        <a class="waves-effect" href="{{ url_for('index') }}"><i
+                                class="menu-icon fa fa-home"></i><span>Halaman
                                 Utama</span></a>
                     </li>
                     <li>
-                        <a class="waves-effect" href="{{ url_for('video_list') }}"><i class="menu-icon fa fa-home"></i><span>Video
+                        <a class="waves-effect" href="{{ url_for('video_list') }}"><i
+                                class="menu-icon fa fa-home"></i><span>Video
                                 Data</span></a>
                     </li>
 
@@ -108,17 +110,13 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <!-- <div class="form-group">
-                                <label for="video">Threshold</label>
-                                <input type="text" class="form-control" id="threshold" name="threshold"
-                                    value="{{ threshold }}">
-                            </div> -->
+
                             <div class="form-group text-center">
                                 <button type="button" class="btn btn-primary" onclick="olah_video()">Proses
                                     Video</button>
                             </div>
 
-                            
+
 
 
                         </div>
@@ -135,11 +133,43 @@
                 <div class="col-lg-8 col-md-10 col-xs-12">
 
                     <div class="box-content">
-                        <h4 class="box-title">Hasil Pengolahan Video</h4>
-                        <div class="card-content">
-                            <h4>Input</h4>
-                            <img src="{{ url_for('video_feed', video=video, threshold=threshold, stat='original') }}"
-                                alt="Warna">
+                        <h4 class="box-title">Hasil Pengolahan Video {% if stat != "Belum Ada Data" %} <i>({{ stat[6] }}) </i>{% endif %}</h4>
+                        <div class="card-content" id="div-ini-data">
+                            <div id="data-video" style="display: none;"></div>
+                            {% if stat == "Belum Ada Data" %}
+                            <div class="form-group">
+                                <p id="p-ket">{{ stat }}</p>
+                                <button type="button" class="btn btn-primary" onclick="proses_video('{{ video }}')" id="btn-proses">Proses</button>
+                            </div>
+                            {% else %}
+                            <div class="form-group text-center">
+                                <table id="example" class="table table-striped table-bordered" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Video</th>
+                                            <th>Waktu</th>
+                                            <th>Last Scan</th>
+                                            <th>Kiri</th>
+                                            <th>Kanan</th>
+                                            <th>Jumlah</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ stat[1] }}</td>
+                                            <td>{{ stat[2] }} detik</td>
+                                            <td id="td-waktu-sekarang">{{ stat[3] }} detik</td>
+                                            <td id="td-kiri">{{ stat[4] }}</td>
+                                            <td id="td-kanan">{{ stat[5] }}</td>
+                                            <td id="td-jumlah">{{ stat[4] + stat[5] }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="form-group text-center">
+                                <button type="button" class="btn btn-primary" onclick="proses_video('{{ video }}')" id="btn-proses">Proses</button>
+                            </div>
+                            {% endif %}
                         </div>
 
                     </div>
@@ -226,13 +256,39 @@
                 type: "GET",
                 url: "/check_jumlah_kenderaan",
                 success: function (data) {
-                //    console.log(data)
+                    //    console.log(data)
 
                     document.getElementById('kiri').innerHTML = data.kenderaan_kiri
                     document.getElementById('kanan').innerHTML = data.kenderaan_kanan
                     document.getElementById('total').innerHTML = data.jumlah_kenderaan
+
+                    if(document.getElementById('example')){
+                        $("#td-waktu-sekarang").text(data.waktu_sekarang);
+                        $("#td-jumlah").text(data.jumlah_kenderaan);
+                        $("#td-kiri").text(data.kenderaan_kiri);
+                        $("#td-kanan").text(data.kenderaan_kanan);
+                    }
+
+                    if(data.selesainya == true){
+                        // reload page
+                        window.location.reload();
+                    }
+
                 }
             });
+        }
+
+        function proses_video(video) {
+            console.log(video)
+            // open url in new tab but stay in current tab and dont redirect or reload this page
+            let html = "<iframe src='/video_feed?video=" + video + "' width='100%' height='100%' frameborder='0' allowfullscreen></iframe>"
+            $("#data-video").html(html)
+            $("#btn-proses").attr("disabled", true)   
+            $("#btn-proses").html("Memproses ....")
+
+            if(document.getElementById('p-ket')){
+                $("#p-ket").html("Window pengolahan video sedang berjalan....")
+            }
         }
 
         // run check_jumlah_kenderaan every 1.5 seconds\

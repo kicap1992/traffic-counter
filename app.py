@@ -14,9 +14,11 @@ video_list = []
 
 cap = None
 
+videonya = None
 jumlah_kenderaan = 0
 kenderaan_kiri = 0
 kenderaan_kanan = 0
+selesainya= False
 
 MYSQL_HOST = os.getenv('MYSQL_HOST')
 MYSQL_USER = os.getenv('MYSQL_USER')
@@ -60,7 +62,7 @@ async def generate_frames2(video, threshold,stat):
     global jumlah_kenderaan
     global kenderaan_kiri
     global kenderaan_kanan
-    global cap
+    global cap,selesainya
 
     jumlah_kenderaan = 0
     kenderaan_kiri = 0
@@ -387,10 +389,12 @@ async def generate_frames2(video, threshold,stat):
 
         else:  # if video is finished then break loop
             await insert_data(video, str(round(frames_count / fps, 2)),str(round(framenumber / fps, 2)), kenderaan_kiri, kenderaan_kanan, "Selesai")
+            selesainya = True
             cap.release()
             cv2.destroyAllWindows()
             break
-
+    
+    selesainya = True
     cap.release()
     cv2.destroyAllWindows()
 
@@ -403,16 +407,39 @@ def update_video_list():
 
 @app.route('/')
 async def index():
+    global videonya,selesainya
+    selesainya = False
     if (cap != None):
         cap.release()
         cv2.destroyAllWindows()
     update_video_list()
     print("video_list:", video_list)
     video =  request.args.get('video', 'video/video.mp4')
+    videonya = video
     the_threshold =  request.args.get('threshold', 450)
     threshold =   int(the_threshold)
+
+    try:
+        query_select = "SELECT * FROM tb_data WHERE nama = %s "
+
+        conn = await get_db_connection()
+        async with conn.cursor() as cursor:
+            await cursor.execute(query_select, (video,))
+            result = await cursor.fetchall()
+            conn.close()
+            
+            if len(result) == 0:
+                return await render_template('index2.html', video=video, threshold=threshold, video_list=video_list, stat="Belum Ada Data", selesainya=selesainya)
+            else :
+                print(result[0])
+                return await render_template('index2.html', video=video, threshold=threshold, video_list=video_list, stat=result[0], selesainya=selesainya)
+
+        
+    except Exception as e:
+        return jsonify({'message': 'Failed to generate frames!', 'error': str(e)}), 500
+
     # Pass the video file path and threshold value to the template
-    return await render_template('index2.html', video=video, threshold=threshold, video_list=video_list)
+    
 
 async def video_feed():
     # Get the video file path, threshold value, and state from the URL parameters
@@ -440,10 +467,25 @@ app.add_url_rule('/video_feed', 'video_feed', video_feed)
 
 @app.route('/check_jumlah_kenderaan', methods=['GET'])
 async def check_jumlah_kenderaan():
-    global jumlah_kenderaan
-    global kenderaan_kiri
-    global kenderaan_kanan
-    return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan})
+    global jumlah_kenderaan , kenderaan_kiri, kenderaan_kanan ,videonya ,selesainya
+    if (videonya != None):
+        conn = await get_db_connection()
+        async with conn.cursor() as cursor:
+            sql = "SELECT * FROM tb_data WHERE nama = %s"
+            await cursor.execute(sql, (videonya,))
+            result = await cursor.fetchall()
+            conn.close()
+            if len(result) == 0:
+                return jsonify({'jumlah_kenderaan': 0, 'kenderaan_kiri': 0, 'kenderaan_kanan': 0})
+            else:
+                print(result[0])
+                jumlah_kenderaan = result[0][4] + result[0][5]
+                kenderaan_kiri = result[0][4]
+                kenderaan_kanan = result[0][5]
+                waktu_sekarang = result[0][3]
+                return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan, 'waktu_sekarang':waktu_sekarang})
+        
+    # return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan})
 
 UPLOAD_FOLDER = 'video'
 @app.route('/upload', methods=['POST'])
