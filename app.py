@@ -483,7 +483,7 @@ async def check_jumlah_kenderaan():
                 kenderaan_kiri = result[0][4]
                 kenderaan_kanan = result[0][5]
                 waktu_sekarang = result[0][3]
-                return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan, 'waktu_sekarang':waktu_sekarang})
+                return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan, 'waktu_sekarang':waktu_sekarang , selesainya: selesainya})
         
     # return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan})
 

@@ -133,13 +133,15 @@
                 <div class="col-lg-8 col-md-10 col-xs-12">
 
                     <div class="box-content">
-                        <h4 class="box-title">Hasil Pengolahan Video {% if stat != "Belum Ada Data" %} <i>({{ stat[6] }}) </i>{% endif %}</h4>
+                        <h4 class="box-title">Hasil Pengolahan Video {% if stat != "Belum Ada Data" %} <i>({{ stat[6]
+                                }}) </i>{% endif %}</h4>
                         <div class="card-content" id="div-ini-data">
                             <div id="data-video" style="display: none;"></div>
                             {% if stat == "Belum Ada Data" %}
                             <div class="form-group">
                                 <p id="p-ket">{{ stat }}</p>
-                                <button type="button" class="btn btn-primary" onclick="proses_video('{{ video }}')" id="btn-proses">Proses</button>
+                                <button type="button" class="btn btn-primary" onclick="proses_video('{{ video }}')"
+                                    id="btn-proses">Proses</button>
                             </div>
                             {% else %}
                             <div class="form-group text-center">
@@ -167,7 +169,8 @@
                                 </table>
                             </div>
                             <div class="form-group text-center">
-                                <button type="button" class="btn btn-primary" onclick="proses_video('{{ video }}')" id="btn-proses">Proses</button>
+                                <button type="button" class="btn btn-primary" onclick="proses_video('{{ video }}')"
+                                    id="btn-proses">Proses</button>
                             </div>
                             {% endif %}
                         </div>
@@ -262,14 +265,14 @@
                     document.getElementById('kanan').innerHTML = data.kenderaan_kanan
                     document.getElementById('total').innerHTML = data.jumlah_kenderaan
 
-                    if(document.getElementById('example')){
+                    if (document.getElementById('example')) {
                         $("#td-waktu-sekarang").text(data.waktu_sekarang);
                         $("#td-jumlah").text(data.jumlah_kenderaan);
                         $("#td-kiri").text(data.kenderaan_kiri);
                         $("#td-kanan").text(data.kenderaan_kanan);
                     }
 
-                    if(data.selesainya == true){
+                    if (data.selesainya == true) {
                         // reload page
                         window.location.reload();
                     }
@@ -283,11 +286,22 @@
             // open url in new tab but stay in current tab and dont redirect or reload this page
             let html = "<iframe src='/video_feed?video=" + video + "' width='100%' height='100%' frameborder='0' allowfullscreen></iframe>"
             $("#data-video").html(html)
-            $("#btn-proses").attr("disabled", true)   
+            $("#btn-proses").attr("disabled", true)
             $("#btn-proses").html("Memproses ....")
 
-            if(document.getElementById('p-ket')){
+            if (document.getElementById('p-ket')) {
                 $("#p-ket").html("Window pengolahan video sedang berjalan....")
+            }
+
+            document.getElementById('kiri').innerHTML = 0
+            document.getElementById('kanan').innerHTML = 0
+            document.getElementById('total').innerHTML = 0
+
+            if (document.getElementById('example')) {
+                $("#td-waktu-sekarang").text(0);
+                $("#td-jumlah").text(0);
+                $("#td-kiri").text(0);
+                $("#td-kanan").text(0);
             }
         }
 
