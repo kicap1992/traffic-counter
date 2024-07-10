@@ -98,7 +98,7 @@
 
                 <div class="col-lg-8 col-md-10 col-xs-12">
                     <div class="box-content">
-                        <h4 class="box-title">Form Analisa Video</h4>
+                        <h4 class="box-title">Form Analisa Video {{ minimal_kepadatan }}</h4>
                         <div class="card-content">
                             <div class="form-group">
                                 <label for="video">Pilih Video:</label>
@@ -108,6 +108,24 @@
                                     <option value="{{ video_var }}" {% if video_var==video %}selected{% endif %}>{{
                                         video_var }}</option>
                                     {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="video">Minimal Kepadatan:</label>
+                                <select class="form-control" id="minimal_kepadatan" name="minimal_kepadatan">
+                                    <option value="-Minimal Kepadatan-" disabled selected>-Pilih Minimal Kepadatan-
+                                    </option>
+                                    <option value="2" {% if minimal_kepadatan==2 %}selected{% endif %}>2</option>
+                                    <option value="3" {% if minimal_kepadatan==3 %}selected{% endif %}>3</option>
+                                    <option value="4" {% if minimal_kepadatan==4 %}selected{% endif %}>4</option>
+                                    <option value="5" {% if minimal_kepadatan==5 %}selected{% endif %}>5</option>
+                                    <option value="6" {% if minimal_kepadatan==6 %}selected{% endif %}>6</option>
+                                    <option value="7" {% if minimal_kepadatan==7 %}selected{% endif %}>7</option>
+                                    <option value="8" {% if minimal_kepadatan==8 %}selected{% endif %}>8</option>
+                                    <option value="9" {% if minimal_kepadatan==9 %}selected{% endif %}>9</option>
+                                    <option value="10" {% if minimal_kepadatan==10 %}selected{% endif %}>10</option>
+
                                 </select>
                             </div>
 
@@ -181,7 +199,7 @@
             </div>
 
             <div class="row small-spacing">
-                <div class="col-lg-4 col-md-4 col-xs-12">
+                <div class="col-lg-3 col-md-3 col-xs-12">
                     <div class="box-content">
                         <div class="statistics-box with-icon">
                             <!-- <i class="ico fa fa-car text-info"></i> -->
@@ -191,7 +209,7 @@
                     </div>
                     <!-- /.box-content -->
                 </div>
-                <div class="col-lg-4 col-md-4 col-xs-12">
+                <div class="col-lg-3 col-md-3 col-xs-12">
                     <div class="box-content">
                         <div class="statistics-box with-icon">
                             <!-- <i class="ico fa fa-car text-info"></i> -->
@@ -201,12 +219,23 @@
                     </div>
                     <!-- /.box-content -->
                 </div>
-                <div class="col-lg-4 col-md-4 col-xs-12">
+                <input type="hidden" id="minimal_value" value="{{ minimal_kepadatan }}">
+                <div class="col-lg-3 col-md-3 col-xs-12">
                     <div class="box-content">
                         <div class="statistics-box with-icon">
                             <!-- <i class="ico fa fa-car text-info"></i> -->
                             <h2 class="counter text-info" id="total">...</h2>
                             <p class="text">Jumlah Kenderaan</p>
+                        </div>
+                    </div>
+                    <!-- /.box-content -->
+                </div>
+                <div class="col-lg-3 col-md-3 col-xs-12">
+                    <div class="box-content">
+                        <div class="statistics-box with-icon">
+                            <!-- <i class="ico fa fa-car text-info"></i> -->
+                            <h2 class="counter text-info" id="kepadatan">...</h2>
+                            <p class="text">Kepadatan Kenderaan</p>
                         </div>
                     </div>
                     <!-- /.box-content -->
@@ -246,11 +275,14 @@
     <script src="assets/scripts/main.min.js"></script>
     <script src="assets/color-switcher/color-switcher.min.js"></script>
     <script>
+        var minimal_kepadatan = document.getElementById('minimal_value').value;
+        $("#minimal_kepadatan").val(minimal_kepadatan);
         function olah_video() {
             var video = document.getElementById('video').value;
+            var minimal_kepadatan = document.getElementById('minimal_kepadatan').value;
             // var threshold = document.getElementById('threshold').value;
             var threshold = 450;
-            window.location.href = '/?video=' + video + '&threshold=' + threshold;
+            window.location.href = '/?video=' + video + '&threshold=' + threshold + '&minimal_kepadatan=' + minimal_kepadatan;
         }
 
         function check_jumlah_kenderaan() {
@@ -260,6 +292,14 @@
                 url: "/check_jumlah_kenderaan",
                 success: function (data) {
                     //    console.log(data)
+                    console.log(data.kenderaan_sekarang)
+                    if (data.kenderaan_sekarang == undefined) {
+                        document.getElementById('kepadatan').innerHTML = "Belum Diproses"
+                    } else if (data.kenderaan_sekarang >= minimal_kepadatan) {
+                        document.getElementById('kepadatan').innerHTML = "Padat"
+                    } else {
+                        document.getElementById('kepadatan').innerHTML = "Tidak Padat"
+                    }
 
                     document.getElementById('kiri').innerHTML = data.kenderaan_kiri
                     document.getElementById('kanan').innerHTML = data.kenderaan_kanan

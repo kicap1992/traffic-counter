@@ -18,6 +18,7 @@ videonya = None
 jumlah_kenderaan = 0
 kenderaan_kiri = 0
 kenderaan_kanan = 0
+kenderaan_sekarang = 0
 selesainya= False
 
 MYSQL_HOST = os.getenv('MYSQL_HOST')
@@ -62,7 +63,7 @@ async def generate_frames2(video, threshold,stat):
     global jumlah_kenderaan
     global kenderaan_kiri
     global kenderaan_kanan
-    global cap,selesainya
+    global cap,selesainya, kenderaan_sekarang
 
     jumlah_kenderaan = 0
     kenderaan_kiri = 0
@@ -125,7 +126,7 @@ async def generate_frames2(video, threshold,stat):
             # cv2.drawContours(image, hull, -1, (0, 255, 0), 3)
 
             # line created to stop counting contours, needed as cars in distance become one big contour
-            lineypos = 125
+            lineypos = 100
             # cv2.line(image, (0, lineypos), (width, lineypos), (255, 0, 0), 5)
 
             # line y position created to count contours
@@ -133,7 +134,7 @@ async def generate_frames2(video, threshold,stat):
             cv2.line(image, (0, lineypos2), (width, lineypos2), (0, 255, 0), 5)
 
             # min area for contours in case a bunch of small noise contours are created
-            minarea = 175
+            minarea = 200
 
             # max area for contours, can be quite large for buses
             maxarea = 50000
@@ -291,6 +292,8 @@ async def generate_frames2(video, threshold,stat):
                     currentcars = currentcars + 1  # adds another to current cars on screen
                     currentcarsindex.append(i)  # adds car ids to current cars on screen
 
+            kenderaan_sekarang = currentcars
+
             for i in range(currentcars):  # loops through all current car ids on screen
 
                 # grabs centroid of certain carid for current frame
@@ -417,6 +420,7 @@ async def index():
     video =  request.args.get('video', 'video/video.mp4')
     videonya = video
     the_threshold =  request.args.get('threshold', 450)
+    minimal_kepadatan =  request.args.get('minimal_kepadatan', 5)
     threshold =   int(the_threshold)
 
     try:
@@ -429,10 +433,10 @@ async def index():
             conn.close()
             
             if len(result) == 0:
-                return await render_template('index2.html', video=video, threshold=threshold, video_list=video_list, stat="Belum Ada Data", selesainya=selesainya)
+                return await render_template('index2.html', video=video, threshold=threshold, video_list=video_list, stat="Belum Ada Data", selesainya=selesainya, minimal_kepadatan=minimal_kepadatan)
             else :
                 print(result[0])
-                return await render_template('index2.html', video=video, threshold=threshold, video_list=video_list, stat=result[0], selesainya=selesainya)
+                return await render_template('index2.html', video=video, threshold=threshold, video_list=video_list, stat=result[0], selesainya=selesainya, minimal_kepadatan=minimal_kepadatan)
 
         
     except Exception as e:
@@ -467,7 +471,7 @@ app.add_url_rule('/video_feed', 'video_feed', video_feed)
 
 @app.route('/check_jumlah_kenderaan', methods=['GET'])
 async def check_jumlah_kenderaan():
-    global jumlah_kenderaan , kenderaan_kiri, kenderaan_kanan ,videonya ,selesainya
+    global jumlah_kenderaan , kenderaan_kiri, kenderaan_kanan ,videonya ,selesainya , kenderaan_sekarang
     if (videonya != None):
         conn = await get_db_connection()
         async with conn.cursor() as cursor:
@@ -483,7 +487,7 @@ async def check_jumlah_kenderaan():
                 kenderaan_kiri = result[0][4]
                 kenderaan_kanan = result[0][5]
                 waktu_sekarang = result[0][3]
-                return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan, 'waktu_sekarang':waktu_sekarang , selesainya: selesainya})
+                return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan, 'waktu_sekarang':waktu_sekarang , "selesainya": selesainya , "kenderaan_sekarang": kenderaan_sekarang})
         
     # return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan})
 
