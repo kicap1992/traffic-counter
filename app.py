@@ -403,7 +403,7 @@ async def generate_frames2(video, threshold,stat):
 
 
 
-def update_video_list():
+async def update_video_list():
     global video_list
     # add "video/" to the video_list and only take video extensions
     video_list =  [f"video/{f}" for f in os.listdir("video") if f.endswith(".mp4")]
@@ -459,8 +459,8 @@ async def video_feed():
 
 @app.route('/video_list')
 async def video_list():
-    update_video_list()
-    return render_template('video_list.html', video_list=video_list)
+    await update_video_list()
+    return await render_template('video_list.html', video_list=video_list)
 
 @app.route('/videos/<path:video>')
 async def video(video):
