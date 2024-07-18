@@ -46,9 +46,27 @@ async def insert_data(nama, waktu,waktu_sekarang ,kenderaan_kiri, kenderaan_kana
         await cursor.execute(sql, (nama,))
         result = await cursor.fetchone()
         if result:
+            # print(waktu_sekarang)
             # update existing data
-            sql = "UPDATE tb_data SET waktu = %s, waktu_sekarang = %s, kenderaan_kiri = %s, kenderaan_kanan = %s , updated_at = %s , status = %s WHERE nama = %s"
-            await cursor.execute(sql, (waktu, waktu_sekarang, kenderaan_kiri, kenderaan_kanan, now, status, nama))
+            # rount the waktu_sekarang
+            rounded_waktu_sekarang = round(float(waktu_sekarang))
+            if (rounded_waktu_sekarang == 0):
+                rounded_waktu_sekarang = 1
+            jumlah_kenderaan = int(kenderaan_kiri) + int(kenderaan_kanan)
+            jumlah_kenderaan_per_menit = jumlah_kenderaan / rounded_waktu_sekarang * 60
+            kepadatan = ""
+            if(jumlah_kenderaan_per_menit < 20):
+                kepadatan = "Kepadatan Sepi"
+            elif(jumlah_kenderaan_per_menit < 40 and jumlah_kenderaan_per_menit >= 20):
+                kepadatan = "Kepadatan Sedang"
+            elif(jumlah_kenderaan_per_menit >= 40):
+                kepadatan = "Kepadatan Tinggi"
+
+            # kepadatan= "Kepadatan Sepi"
+
+
+            sql = "UPDATE tb_data SET waktu = %s, waktu_sekarang = %s, kenderaan_kiri = %s, kenderaan_kanan = %s , updated_at = %s , status = %s , kepadatan = %s WHERE nama = %s"
+            await cursor.execute(sql, (waktu, waktu_sekarang, kenderaan_kiri, kenderaan_kanan, now, status, kepadatan, nama))
         else:
             # insert new data
             sql = "INSERT INTO tb_data (nama, waktu, waktu_sekarang, kenderaan_kiri, kenderaan_kanan) VALUES (%s,  %s, %s, %s, %s)"
@@ -415,7 +433,7 @@ async def index():
     if (cap != None):
         cap.release()
         cv2.destroyAllWindows()
-    update_video_list()
+    await update_video_list()
     print("video_list:", video_list)
     video =  request.args.get('video', 'video/video.mp4')
     videonya = video
@@ -487,7 +505,8 @@ async def check_jumlah_kenderaan():
                 kenderaan_kiri = result[0][4]
                 kenderaan_kanan = result[0][5]
                 waktu_sekarang = result[0][3]
-                return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan, 'waktu_sekarang':waktu_sekarang , "selesainya": selesainya , "kenderaan_sekarang": kenderaan_sekarang})
+                kepadatan = result[0][7]
+                return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan, 'waktu_sekarang':waktu_sekarang , "selesainya": selesainya , "kenderaan_sekarang": kenderaan_sekarang, "kepadatan":kepadatan})
         
     # return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan})
 

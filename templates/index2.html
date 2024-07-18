@@ -111,7 +111,7 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label for="video">Minimal Kepadatan:</label>
                                 <select class="form-control" id="minimal_kepadatan" name="minimal_kepadatan">
                                     <option value="-Minimal Kepadatan-" disabled selected>-Pilih Minimal Kepadatan-
@@ -127,7 +127,7 @@
                                     <option value="10" {% if minimal_kepadatan==10 %}selected{% endif %}>10</option>
 
                                 </select>
-                            </div>
+                            </div> -->
 
                             <div class="form-group text-center">
                                 <button type="button" class="btn btn-primary" onclick="olah_video()">Proses
@@ -172,6 +172,7 @@
                                             <th>Kiri</th>
                                             <th>Kanan</th>
                                             <th>Jumlah</th>
+                                            <th>Status Kepadatan</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -182,6 +183,7 @@
                                             <td id="td-kiri">{{ stat[4] }}</td>
                                             <td id="td-kanan">{{ stat[5] }}</td>
                                             <td id="td-jumlah">{{ stat[4] + stat[5] }}</td>
+                                            <td id="td-status-kepadatan">{{ stat[7] }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -293,13 +295,13 @@
                 success: function (data) {
                     //    console.log(data)
                     console.log(data.kenderaan_sekarang)
-                    if (data.kenderaan_sekarang == undefined) {
-                        document.getElementById('kepadatan').innerHTML = "Belum Diproses"
-                    } else if (data.kenderaan_sekarang >= minimal_kepadatan) {
-                        document.getElementById('kepadatan').innerHTML = "Padat"
-                    } else {
-                        document.getElementById('kepadatan').innerHTML = "Tidak Padat"
-                    }
+                    // if (data.kenderaan_sekarang == undefined) {
+                    //     document.getElementById('kepadatan').innerHTML = "Belum Diproses"
+                    // } else if (data.kenderaan_sekarang >= minimal_kepadatan) {
+                    //     document.getElementById('kepadatan').innerHTML = "Padat"
+                    // } else {
+                    //     document.getElementById('kepadatan').innerHTML = "Tidak Padat"
+                    // }
 
                     document.getElementById('kiri').innerHTML = data.kenderaan_kiri
                     document.getElementById('kanan').innerHTML = data.kenderaan_kanan
@@ -310,6 +312,16 @@
                         $("#td-jumlah").text(data.jumlah_kenderaan);
                         $("#td-kiri").text(data.kenderaan_kiri);
                         $("#td-kanan").text(data.kenderaan_kanan);
+                        $("#td-status-kepadatan").text(data.kepadatan);
+                        if(data.kepadatan == "Kepadatan Sepi"){
+                            $("#kepadatan").text("Sepi"); 
+                        }else if(data.kepadatan == "Kepadatan Sedang"){
+                            $("#kepadatan").text("Sedang");
+                        }else {
+                            $("#kepadatan").text("Tinggi");
+                        }
+                        // 
+                        
                     }
 
                     if (data.selesainya == true) {
