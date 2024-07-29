@@ -20,6 +20,7 @@ kenderaan_kiri = 0
 kenderaan_kanan = 0
 kenderaan_sekarang = 0
 selesainya= False
+total_kenderaan_sekarang = 0
 
 MYSQL_HOST = os.getenv('MYSQL_HOST')
 MYSQL_USER = os.getenv('MYSQL_USER')
@@ -45,6 +46,7 @@ def hitung_kepadatan_kendaraan(jumlah_kendaraan, panjang_jalan):
     return kepadatan
 
 async def insert_data(nama, waktu,waktu_sekarang ,kenderaan_kiri, kenderaan_kanan,status):
+    global total_kenderaan_sekarang
     # get the datetime
     now = time.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -58,20 +60,27 @@ async def insert_data(nama, waktu,waktu_sekarang ,kenderaan_kiri, kenderaan_kana
             # print(waktu_sekarang)
             # update existing data
             # rount the waktu_sekarang
-            rounded_waktu_sekarang = round(float(waktu_sekarang))
-            if (rounded_waktu_sekarang == 0):
-                rounded_waktu_sekarang = 1
-            jumlah_kenderaan = int(kenderaan_kiri) + int(kenderaan_kanan)
-            jumlah_kenderaan_per_menit = jumlah_kenderaan / rounded_waktu_sekarang * 60
-            kepadatan = ""
-            if(jumlah_kenderaan_per_menit < 20):
-                kepadatan = "Kepadatan Sepi"
-            elif(jumlah_kenderaan_per_menit < 40 and jumlah_kenderaan_per_menit >= 20):
-                kepadatan = "Kepadatan Sedang"
-            elif(jumlah_kenderaan_per_menit >= 40):
-                kepadatan = "Kepadatan Tinggi"
+            # rounded_waktu_sekarang = round(float(waktu_sekarang))
+            # if (rounded_waktu_sekarang == 0):
+            #     rounded_waktu_sekarang = 1
+            # jumlah_kenderaan = int(kenderaan_kiri) + int(kenderaan_kanan)
+            # jumlah_kenderaan_per_menit = jumlah_kenderaan / rounded_waktu_sekarang * 60
+            # kepadatan = ""
+            # if(jumlah_kenderaan_per_menit < 20):
+            #     kepadatan = "Kepadatan Sepi"
+            # elif(jumlah_kenderaan_per_menit < 40 and jumlah_kenderaan_per_menit >= 20):
+            #     kepadatan = "Kepadatan Sedang"
+            # elif(jumlah_kenderaan_per_menit >= 40):
+            #     kepadatan = "Kepadatan Tinggi"
 
             # kepadatan= "Kepadatan Sepi"
+
+            if total_kenderaan_sekarang <= 2:
+                kepadatan = "Kepadatan Sepi"
+            elif total_kenderaan_sekarang > 2 and total_kenderaan_sekarang <= 4:
+                kepadatan = "Kepadatan Sedang"
+            else:
+                kepadatan = "Kepadatan Tinggi"
 
 
             sql = "UPDATE tb_data SET waktu = %s, waktu_sekarang = %s, kenderaan_kiri = %s, kenderaan_kanan = %s , updated_at = %s , status = %s , kepadatan = %s WHERE nama = %s"
@@ -90,7 +99,7 @@ async def generate_frames2(video, threshold,stat):
     global jumlah_kenderaan
     global kenderaan_kiri
     global kenderaan_kanan
-    global cap,selesainya, kenderaan_sekarang
+    global cap,selesainya, kenderaan_sekarang , total_kenderaan_sekarang
 
     jumlah_kenderaan = 0
     kenderaan_kiri = 0
@@ -221,6 +230,11 @@ async def generate_frames2(video, threshold,stat):
 
             # The section below keeps track of the centroids and assigns them to old carids or new carids
 
+            # print("total centroids: " + str(len(cxx)))
+            total_kenderaan_sekarang = len(cxx)
+            
+
+
             if len(cxx):  # if there are centroids in the specified area
 
                 if not carids:  # if carids is empty
@@ -239,6 +253,7 @@ async def generate_frames2(video, threshold,stat):
 
                     dx = np.zeros((len(cxx), len(carids)))  # new arrays to calculate deltas
                     dy = np.zeros((len(cyy), len(carids)))  # new arrays to calculate deltas
+                    
 
                     for i in range(len(cxx)):  # loops through all centroids
 
@@ -502,7 +517,7 @@ app.add_url_rule('/video_feed', 'video_feed', video_feed)
 
 @app.route('/check_jumlah_kenderaan', methods=['GET'])
 async def check_jumlah_kenderaan():
-    global jumlah_kenderaan , kenderaan_kiri, kenderaan_kanan ,videonya ,selesainya , kenderaan_sekarang
+    global jumlah_kenderaan , kenderaan_kiri, kenderaan_kanan ,videonya ,selesainya , kenderaan_sekarang,total_kenderaan_sekarang
     if (videonya != None):
         conn = await get_db_connection()
         async with conn.cursor() as cursor:
@@ -513,13 +528,13 @@ async def check_jumlah_kenderaan():
             if len(result) == 0:
                 return jsonify({'jumlah_kenderaan': 0, 'kenderaan_kiri': 0, 'kenderaan_kanan': 0})
             else:
-                print(result[0])
+                # print(result[0])
                 jumlah_kenderaan = result[0][4] + result[0][5]
                 kenderaan_kiri = result[0][4]
                 kenderaan_kanan = result[0][5]
                 waktu_sekarang = result[0][3]
                 kepadatan = result[0][7]
-                return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan, 'waktu_sekarang':waktu_sekarang , "selesainya": selesainya , "kenderaan_sekarang": kenderaan_sekarang, "kepadatan":kepadatan})
+                return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan, 'waktu_sekarang':waktu_sekarang , "selesainya": selesainya , "kenderaan_sekarang": kenderaan_sekarang, "kepadatan":kepadatan , "total_kenderaan_sekarang":total_kenderaan_sekarang})
         
     # return jsonify({'jumlah_kenderaan': jumlah_kenderaan, 'kenderaan_kiri': kenderaan_kiri, 'kenderaan_kanan': kenderaan_kanan})
 

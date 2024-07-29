@@ -278,6 +278,7 @@
     <script src="assets/color-switcher/color-switcher.min.js"></script>
     <script>
         var minimal_kepadatan = document.getElementById('minimal_value').value;
+        $("#kepadatan").text("...");
         $("#minimal_kepadatan").val(minimal_kepadatan);
         function olah_video() {
             var video = document.getElementById('video').value;
@@ -285,7 +286,7 @@
             // var threshold = document.getElementById('threshold').value;
             var threshold = 450;
             // window.location.href = '/?video=' + video + '&threshold=' + threshold + '&minimal_kepadatan=' + minimal_kepadatan;
-            window.location.href = '/?video=' + video + '&threshold=' + threshold ;
+            window.location.href = '/?video=' + video + '&threshold=' + threshold;
         }
 
         function check_jumlah_kenderaan() {
@@ -294,8 +295,8 @@
                 type: "GET",
                 url: "/check_jumlah_kenderaan",
                 success: function (data) {
-                    //    console.log(data)
-                    console.log(data.kenderaan_sekarang)
+                    console.log(data.total_kenderaan_sekarang)
+                    // console.log(data.kenderaan_sekarang)
                     // if (data.kenderaan_sekarang == undefined) {
                     //     document.getElementById('kepadatan').innerHTML = "Belum Diproses"
                     // } else if (data.kenderaan_sekarang >= minimal_kepadatan) {
@@ -306,6 +307,13 @@
 
                     document.getElementById('kiri').innerHTML = data.kenderaan_kiri
                     document.getElementById('kanan').innerHTML = data.kenderaan_kanan
+                    if (data.total_kenderaan_sekarang <= 2) {
+                        $("#kepadatan").text("Kepadatan Sepi");
+                    } else if (data.total_kenderaan_sekarang > 2 && data.total_kenderaan_sekarang <= 4) {
+                        $("#kepadatan").text("Kepadatan Sedang");
+                    } else {
+                        $("#kepadatan").text("Kepadatan Tinggi");
+                    }
                     document.getElementById('total').innerHTML = data.jumlah_kenderaan
 
                     if (document.getElementById('example')) {
@@ -314,15 +322,16 @@
                         $("#td-kiri").text(data.kenderaan_kiri);
                         $("#td-kanan").text(data.kenderaan_kanan);
                         $("#td-status-kepadatan").text(data.kepadatan);
-                        if(data.kepadatan == "Kepadatan Sepi"){
-                            $("#kepadatan").text("Sepi"); 
-                        }else if(data.kepadatan == "Kepadatan Sedang"){
-                            $("#kepadatan").text("Sedang");
-                        }else {
-                            $("#kepadatan").text("Tinggi");
-                        }
+                        // if(data.kepadatan == "Kepadatan Sepi"){
+                        //     $("#kepadatan").text("Sepi"); 
+                        // }else if(data.kepadatan == "Kepadatan Sedang"){
+                        //     $("#kepadatan").text("Sedang");
+                        // }else {
+                        //     $("#kepadatan").text("Tinggi");
+                        // }
                         // 
-                        
+
+
                     }
 
                     if (data.selesainya == true) {
