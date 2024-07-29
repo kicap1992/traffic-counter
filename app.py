@@ -35,6 +35,15 @@ async def get_db_connection():
         loop=asyncio.get_running_loop()
     )
 
+
+
+def hitung_kepadatan_kendaraan(jumlah_kendaraan, panjang_jalan):
+
+    if panjang_jalan <= 0:
+        raise ValueError("Panjang jalan harus lebih besar dari nol.")
+    kepadatan = jumlah_kendaraan / panjang_jalan
+    return kepadatan
+
 async def insert_data(nama, waktu,waktu_sekarang ,kenderaan_kiri, kenderaan_kanan,status):
     # get the datetime
     now = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -144,12 +153,15 @@ async def generate_frames2(video, threshold,stat):
             # cv2.drawContours(image, hull, -1, (0, 255, 0), 3)
 
             # line created to stop counting contours, needed as cars in distance become one big contour
-            lineypos = 100
+            lineypos = 90
             # cv2.line(image, (0, lineypos), (width, lineypos), (255, 0, 0), 5)
 
             # line y position created to count contours
             lineypos2 = 150
             cv2.line(image, (0, lineypos2), (width, lineypos2), (0, 255, 0), 5)
+
+            cv2.line(image, (0, 225), (width, 225), (255, 255, 255), 2)
+            cv2.line(image, (0, lineypos), (width, lineypos), (255, 255, 255), 2)
 
             # min area for contours in case a bunch of small noise contours are created
             minarea = 200
@@ -160,6 +172,7 @@ async def generate_frames2(video, threshold,stat):
             # vectors for the x and y locations of contour centroids in current frame
             cxx = np.zeros(len(contours))
             cyy = np.zeros(len(contours))
+            
 
             for i in range(len(contours)):  # cycles through all contours in current frame
 

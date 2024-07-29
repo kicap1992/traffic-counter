@@ -281,10 +281,11 @@
         $("#minimal_kepadatan").val(minimal_kepadatan);
         function olah_video() {
             var video = document.getElementById('video').value;
-            var minimal_kepadatan = document.getElementById('minimal_kepadatan').value;
+            // var minimal_kepadatan = document.getElementById('minimal_kepadatan').value;
             // var threshold = document.getElementById('threshold').value;
             var threshold = 450;
-            window.location.href = '/?video=' + video + '&threshold=' + threshold + '&minimal_kepadatan=' + minimal_kepadatan;
+            // window.location.href = '/?video=' + video + '&threshold=' + threshold + '&minimal_kepadatan=' + minimal_kepadatan;
+            window.location.href = '/?video=' + video + '&threshold=' + threshold ;
         }
 
         function check_jumlah_kenderaan() {
